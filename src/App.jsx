@@ -1,4 +1,5 @@
 import Router from "./routers/Router";
+import { BrowserRouter } from "react-router-dom";
 import { useState } from "react";
 import GlobalStyle from "style/GlobalStyle";
 import { ThemeProvider } from "styled-components";
@@ -11,14 +12,16 @@ function App() {
     content: null,
     onSummit: null
   });
-  const [login, setLogin] = useState(false);
+  const [login, setLogin] = useState(true);
 
   return (
     <>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <Modal modalState={modalState} setModalState={setModalState} />
-        <Router login={login} />
+        <BrowserRouter>
+          <Modal modalState={modalState} setModalState={setModalState} />
+          <Router login={login} />
+        </BrowserRouter>
       </ThemeProvider>
     </>
   );
