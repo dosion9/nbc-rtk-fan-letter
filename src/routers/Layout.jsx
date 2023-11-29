@@ -3,6 +3,7 @@ import Header from "components/layout/Header";
 import Footer from "components/layout/Footer";
 import theme from "style/Theme";
 import styled from "styled-components";
+import { Outlet } from "react-router-dom";
 
 const StMain = styled.main`
   width: 100%;
@@ -16,11 +17,13 @@ const StMain = styled.main`
   gap: ${theme.spacing.xl};
 `;
 
-function Layout({ children }) {
+function Layout() {
   return (
     <>
       <Header />
-      <StMain>{children}</StMain>
+      <StMain>
+        <Outlet />
+      </StMain>
       <Footer />
     </>
   );
