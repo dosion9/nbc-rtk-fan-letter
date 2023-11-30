@@ -1,4 +1,5 @@
-const { createSlice } = require("@reduxjs/toolkit");
+import { createSlice } from "@reduxjs/toolkit";
+
 const initialState = {
   isLogin: false,
   auth: {
@@ -15,11 +16,10 @@ const authSlice = createSlice({
       state.isLogin = true;
     },
     logout: (state, action) => {
-      state.isLogin = false;
+      state = initialState;
     },
     signUp: (state, action) => {
       const { id, pw, nickname } = action.payload;
-      alert(`${id} ${pw} ${nickname}`);
       state.auth = { id, nickname };
       state.isLogin = true;
     }
