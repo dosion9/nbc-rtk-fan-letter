@@ -1,5 +1,5 @@
 import Button from "components/ui/Button";
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 function UserLayout() {
   const location = useLocation();
@@ -34,6 +34,7 @@ const StContainer = styled.div`
 `;
 
 const StWrap = styled.div`
+  min-width: 15rem;
   border: ${({ theme }) => theme.border.blue};
   border-radius: ${({ theme }) => theme.border.borderRadius};
   padding: ${({ theme }) => theme.spacing.xl};

@@ -4,8 +4,11 @@ import Form from "components/ui/Form";
 import Input from "components/ui/Input";
 import Button from "components/ui/Button";
 import { validateId, validatePw, validateNickname } from "utils/validation";
+import { signUp } from "redux/modules/authSlice";
+import { useDispatch } from "react-redux";
 
 function Register() {
+  const dispatch = useDispatch();
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [nickname, setNickname] = useState("");
@@ -26,6 +29,12 @@ function Register() {
   // TODO : 회원가입 연결하기
   const onSummit = (e) => {
     e.preventDefault();
+    const signUpData = {
+      id,
+      pw,
+      nickname
+    };
+    dispatch(signUp(signUpData));
   };
 
   const onChange = (e, setState) => {

@@ -3,7 +3,11 @@ import Form from "components/ui/Form";
 import Input from "components/ui/Input";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { login } from "redux/modules/authSlice";
+import { useDispatch } from "react-redux";
+
 function Login() {
+  const dispatch = useDispatch();
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [disabled, setDisabled] = useState(true);
@@ -14,7 +18,7 @@ function Login() {
 
   const onSummit = (e) => {
     e.preventDefault();
-    alert("로그인 행위");
+    dispatch(login());
   };
 
   // TODO : 로그인 연결하기

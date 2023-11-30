@@ -7,25 +7,27 @@ import Register from "pages/User/Register";
 import Layout from "./Layout";
 import UserLayout from "./UserLayout";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-const Router = ({ isLogin }) => {
+const Router = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const accessiblePath = ["/user/register", "/user/login"];
+  const isLogin = useSelector((state) => state.authSlice.isLogin);
 
   // 로그아웃 때 다른 페이지로 이동시 회원가입 페이지로 이동
   useEffect(() => {
     if (!isLogin && !accessiblePath.includes(location.pathname)) {
-      navigate("/user/register");
+      navigate("/user/login");
     }
-  }, [location]);
+  }, [location, isLogin]);
 
   // 로그인 때 로그인, 회원가입 페이지로 이동하려하면 이동 전 페이지로 이동
   useEffect(() => {
     if (isLogin && accessiblePath.includes(location.pathname)) {
-      navigate(-1);
+      navigate("/");
     }
-  }, [location]);
+  }, [location, isLogin]);
   return (
     <Routes>
       <Route element={<Layout />}>

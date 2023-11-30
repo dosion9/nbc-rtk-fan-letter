@@ -12,7 +12,6 @@ function App() {
     content: null,
     onSummit: null
   });
-  const [isLogin, setIsLogin] = useState(false);
 
   return (
     <>
@@ -20,7 +19,7 @@ function App() {
         <GlobalStyle />
         <BrowserRouter>
           <Modal modalState={modalState} setModalState={setModalState} />
-          <Router isLogin={isLogin} />
+          <Router />
         </BrowserRouter>
       </ThemeProvider>
     </>
