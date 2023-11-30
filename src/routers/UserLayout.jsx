@@ -1,15 +1,52 @@
-import { Outlet, Link } from "react-router-dom";
-
+import Button from "components/ui/Button";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 function UserLayout() {
-  return (
-    <div>
-      <h1>로그인 || 회원가입 레이아웃</h1>
+  const location = useLocation();
+  const navigate = useNavigate();
 
-      <Outlet />
-      <Link to={"login"}>로그인</Link>
-      <Link to={"register"}>회원가입</Link>
-    </div>
+  const pathLoginCheck = location.pathname === "/user/login";
+
+  return (
+    <StContainer>
+      <StWrap>
+        <h1>{pathLoginCheck ? "로그인" : "회원가입"}</h1>
+        <Outlet />
+        {pathLoginCheck ? (
+          <Button color={"blue"} onClick={() => navigate("register")}>
+            회원가입으로 이동
+          </Button>
+        ) : (
+          <Button color={"blue"} onClick={() => navigate("login")}>
+            로그인으로 이동
+          </Button>
+        )}
+      </StWrap>
+    </StContainer>
   );
 }
+
+const StContainer = styled.div`
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const StWrap = styled.div`
+  border: ${({ theme }) => theme.border.blue};
+  border-radius: ${({ theme }) => theme.border.borderRadius};
+  padding: ${({ theme }) => theme.spacing.xl};
+  background-color: ${({ theme }) => theme.color.white};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.base};
+  text-align: center;
+
+  & h1 {
+    font-size: ${({ theme }) => theme.fontSize.xl};
+    font-weight: bold;
+  }
+`;
 
 export default UserLayout;

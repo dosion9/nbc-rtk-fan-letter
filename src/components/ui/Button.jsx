@@ -5,23 +5,45 @@ import theme from "style/Theme";
 const StButton = styled.button`
   padding: ${theme.spacing.sm} ${theme.spacing.xl};
   font-weight: bold;
-  background-color: ${(props) => (props.$active ? theme.color[props.color] : theme.color.white)};
-  border: ${(props) => theme.border[props.color] || theme.border.waring};
-  color: ${(props) => (props.$active ? theme.color.white : theme.color[props.color])};
+  background-color: ${({ theme, color, $active, disabled }) => {
+    if (disabled) {
+      return theme.color.disabled;
+    } else {
+      return $active ? theme.color[color] : theme.color.white;
+    }
+  }};
+  border: ${({ theme, color, disabled }) => {
+    if (disabled) {
+      return theme.border.disabled;
+    } else {
+      return theme.border[color] || theme.border.waring;
+    }
+  }};
+  color: ${({ theme, $active, disabled, color }) => {
+    if ($active || disabled) {
+      return theme.color.white;
+    } else {
+      return theme.color[color];
+    }
+  }};
   border-radius: ${theme.border.borderRadius};
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   transition: ${theme.transition.base};
   font-size: ${(props) => (props.size ? theme.fontSize[props.size] : null)};
 
   &:hover {
     color: ${theme.color.white};
-    background-color: ${(props) => theme.color[props.color]};
+    background-color: ${({ theme, disabled, color }) => {
+      if (!disabled) {
+        return theme.color[color];
+      }
+    }};
   }
 `;
 
-function Button({ children, color, size, active, onClick }) {
+function Button({ children, color, size, active, disabled, onClick }) {
   return (
-    <StButton color={color} size={size} $active={active} onClick={onClick}>
+    <StButton color={color} size={size} $active={active} disabled={disabled} onClick={onClick}>
       {children}
     </StButton>
   );
