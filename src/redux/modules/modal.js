@@ -1,27 +1,4 @@
-const UPDATE_MODAL = "modal/UPDATE_MODAL";
-const OPEN_MODAL = "modal/OPEN_MODAL";
-const CLOSE_MODAL = "modal/CLOSE_MODAL";
-
-export const updateModal = (payload) => {
-  return {
-    type: UPDATE_MODAL,
-    payload
-  };
-};
-
-export const openModal = (payload) => {
-  return {
-    type: OPEN_MODAL,
-    payload
-  };
-};
-
-export const closeModal = (payload) => {
-  return {
-    type: CLOSE_MODAL,
-    payload
-  };
-};
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   type: "default",
@@ -30,17 +7,21 @@ const initialState = {
   onSummit: null
 };
 
-const modalState = (state = initialState, action) => {
-  switch (action.type) {
-    case UPDATE_MODAL:
+const modalSlice = createSlice({
+  name: "modal",
+  initialState,
+  reducers: {
+    updateModal: (state, action) => {
       return { ...initialState, ...action.payload };
-    case OPEN_MODAL:
+    },
+    openModal: (state, action) => {
       return { ...state, active: true };
-    case CLOSE_MODAL:
+    },
+    closeModal: (state, action) => {
       return { ...state, active: false };
-    default:
-      return state;
+    }
   }
-};
+});
 
-export default modalState;
+export default modalSlice.reducer;
+export const { updateModal, openModal, closeModal } = modalSlice.actions;
