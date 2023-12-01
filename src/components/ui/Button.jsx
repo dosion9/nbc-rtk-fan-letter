@@ -16,7 +16,7 @@ const StButton = styled.button`
     if (disabled) {
       return theme.border.disabled;
     } else {
-      return theme.border[color] || theme.border.waring;
+      return theme.border[color] || theme.border.warning;
     }
   }};
   color: ${({ theme, $active, disabled, color }) => {
@@ -41,9 +41,9 @@ const StButton = styled.button`
   }
 `;
 
-function Button({ children, color, size, active, disabled, onClick }) {
+function Button({ children, color, size, active, disabled, onClick, className }) {
   return (
-    <StButton color={color} size={size} $active={active} disabled={disabled} onClick={onClick}>
+    <StButton className={className} color={color} size={size} $active={active} disabled={disabled} onClick={onClick}>
       {children}
     </StButton>
   );

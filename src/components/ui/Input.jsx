@@ -37,7 +37,7 @@ function Input({ type, placeholder, value, onChange, labelText, maxLength, class
   useEffect(() => {
     switch (validationValue) {
       case false:
-        return setValidationColor("waring");
+        return setValidationColor("warning");
       case true:
         return setValidationColor("green");
       default:

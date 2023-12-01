@@ -55,6 +55,10 @@ body {
 	background-repeat: repeat;
 }
 
+a {
+	text-decoration: none;
+	color: inherit;
+}
 
 `;
 

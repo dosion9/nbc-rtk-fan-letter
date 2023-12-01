@@ -6,11 +6,12 @@ const color = {
   green: "lightgreen",
   purple: "#6f42c1",
   yellow: "gold",
-  waring: "#ff0000", // 잘못된 지정을 했을 때 나오는 색
+  warning: "#ff0000", // 잘못된 지정을 했을 때 나오는 색
   shadow: "#252525a9",
   lightBlue: "#c4dae2",
   disabled: "gray",
-  base: "skyblue"
+  base: "skyblue",
+  baseDark: "#6ca4b9"
 };
 
 const fontSize = {
@@ -28,8 +29,9 @@ const border = {
   green: `3px solid ${color.green}`,
   purple: `3px solid ${color.purple}`,
   yellow: `3px solid ${color.yellow}`,
-  waring: `3px solid ${color.waring}`,
+  warning: `3px solid ${color.warning}`,
   disabled: `3px solid ${color.disabled}`,
+  baseDark: `3px solid ${color.baseDark}`,
   borderRadius: "1em"
 };
 
