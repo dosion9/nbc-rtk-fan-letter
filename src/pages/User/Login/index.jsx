@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { login } from "redux/modules/authSlice";
 import { useDispatch } from "react-redux";
+import api from "../../../axios/api";
+import { updateModal } from "redux/modules/modal";
 
 function Login() {
   const dispatch = useDispatch();
@@ -16,12 +18,19 @@ function Login() {
     setState(e.target.value);
   };
 
-  const onSummit = (e) => {
+  const onSummit = async (e) => {
     e.preventDefault();
-    dispatch(login());
+
+    const loginData = { id, password: pw };
+    try {
+      const res = await api.post("/login?expiresIn=5m", loginData);
+      dispatch(login(res));
+    } catch (error) {
+      dispatch(updateModal({ type: "warning", active: true, content: error.message, onSummit: null }));
+    }
   };
 
-  // TODO : 로그인 연결하기
+  // 로그인 Form에 다 입력해야 button 활성화
   useEffect(() => {
     id && pw ? setDisabled(false) : setDisabled(true);
   }, [id, pw]);

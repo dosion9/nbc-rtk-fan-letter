@@ -7,13 +7,38 @@ import Register from "pages/User/Register";
 import Layout from "./Layout";
 import UserLayout from "./UserLayout";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import api from "../axios/api";
+import { login, logout } from "redux/modules/authSlice";
+import { updateModal } from "redux/modules/modal";
 
 const Router = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const accessiblePath = ["/user/register", "/user/login"];
   const isLogin = useSelector((state) => state.authSlice.isLogin);
+
+  // 페이지 이동 시 만료된 토큰인지 확인
+  useEffect(() => {
+    const LocalAccessToken = localStorage.getItem("accessToken");
+    const checkToken = async () => {
+      try {
+        const res = await api.get("/user");
+
+        if (res?.success) {
+          dispatch(login({ ...res, accessToken: LocalAccessToken }));
+        }
+      } catch (error) {
+        dispatch(logout());
+        localStorage.removeItem("accessToken");
+        dispatch(updateModal({ type: "warning", active: true, content: error.message, onSummit: null }));
+      }
+    };
+    if (LocalAccessToken) {
+      checkToken();
+    }
+  }, []);
 
   // 로그아웃 때 다른 페이지로 이동시 회원가입 페이지로 이동
   useEffect(() => {

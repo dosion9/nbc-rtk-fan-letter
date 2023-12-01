@@ -4,9 +4,10 @@ import Form from "components/ui/Form";
 import Input from "components/ui/Input";
 import Button from "components/ui/Button";
 import { validateId, validatePw, validateNickname } from "utils/validation";
-import { signUp } from "redux/modules/authSlice";
 import { useDispatch } from "react-redux";
-
+import { updateModal } from "redux/modules/modal";
+import api from "../../../axios/api";
+import { login } from "redux/modules/authSlice";
 function Register() {
   const dispatch = useDispatch();
   const [id, setId] = useState("");
@@ -26,15 +27,28 @@ function Register() {
     return validateNickname(value);
   }, []);
 
-  // TODO : 회원가입 연결하기
-  const onSummit = (e) => {
+  // 회원가입
+  const onSummit = async (e) => {
     e.preventDefault();
+    const loginData = {
+      id,
+      password: pw
+    };
     const signUpData = {
       id,
-      pw,
+      password: pw,
       nickname
     };
-    dispatch(signUp(signUpData));
+    try {
+      const { message, success } = await api.post("/register", signUpData);
+      if (success) {
+        const resLogin = await api.post("/login", loginData);
+        dispatch(updateModal({ active: true, content: message, onSummit: null }));
+        dispatch(login(resLogin));
+      }
+    } catch (error) {
+      dispatch(updateModal({ type: "warning", active: true, content: error.message, onSummit: null }));
+    }
   };
 
   const onChange = (e, setState) => {
