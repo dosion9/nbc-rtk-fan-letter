@@ -30,6 +30,7 @@ const authSlice = createSlice({
     logout: (state, action) => {
       state.isLogin = false;
       state.user = initialState.user;
+      localStorage.removeItem("accessToken");
     }
   }
 });
