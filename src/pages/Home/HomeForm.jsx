@@ -8,7 +8,7 @@ import member from "data/member";
 import { validateLetter } from "utils/validation";
 import styled from "styled-components";
 import theme from "style/Theme";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createLetter } from "redux/modules/letters";
 import { updateModal, openModal } from "redux/modules/modal";
 
@@ -25,15 +25,14 @@ const memberNameList = member.map((n) => n.name);
 
 function HomeForm() {
   const dispatch = useDispatch();
-  const [nickname, setNickname] = useState("");
+  const nickname = useSelector((state) => state.authSlice.user.nickname);
   const [content, setContent] = useState("");
   const [writedTo, setWritedTo] = useState(memberNameList[0]);
   const onChange = (e, setState) => setState(e.target.value);
   const handleCreateLetter = (e) => {
-    const validation = validateLetter(nickname, content);
+    const validation = validateLetter(content);
     if (validation === true) {
       dispatch(createLetter({ nickname, content, writedTo }));
-      setNickname("");
       setContent("");
       setWritedTo(memberNameList[0]);
     } else {
@@ -54,12 +53,11 @@ function HomeForm() {
         <Strow>
           <Input
             value={nickname}
-            placeholder={"최대 10글자까지 작성할 수 있습니다."}
             maxLength={10}
-            onChange={(e) => onChange(e, setNickname)}
             labelText={"닉네임"}
             className="col"
             color="blue"
+            readOnly={true}
           ></Input>
           <SelectBox
             value={writedTo}

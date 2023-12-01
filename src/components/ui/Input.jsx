@@ -30,7 +30,7 @@ const StValidationText = styled.p`
   margin-left: 12px;
 `;
 
-function Input({ type, placeholder, value, onChange, labelText, maxLength, className, validation }) {
+function Input({ type, placeholder, value, onChange, labelText, maxLength, className, validation, readOnly }) {
   const { value: validationValue, text: validationText } = validation || {};
   let [validationColor, setValidationColor] = useState("blue");
 
@@ -49,15 +49,20 @@ function Input({ type, placeholder, value, onChange, labelText, maxLength, class
   return (
     <StWrap className={className}>
       {labelText && <Label htmlFor={id}>{labelText}</Label>}
-      <StInput
-        type={type || "text"}
-        value={value}
-        placeholder={placeholder}
-        onChange={onChange}
-        id={id}
-        maxLength={maxLength}
-        $validationColor={validationColor}
-      />
+      {readOnly ? (
+        <p>{value}</p>
+      ) : (
+        <StInput
+          type={type || "text"}
+          value={value}
+          placeholder={placeholder}
+          onChange={onChange}
+          id={id}
+          maxLength={maxLength}
+          $validationColor={validationColor}
+        />
+      )}
+
       {validation && <StValidationText $validationColor={validationColor}>{validationText}</StValidationText>}
     </StWrap>
   );
