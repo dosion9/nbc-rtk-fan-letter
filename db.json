@@ -1,0 +1,41 @@
+{
+  "register": [
+    {
+      "id": "유저 아이디1",
+      "password": "유저 비밀번호",
+      "nickname": "유저 닉네임"
+    },
+    {
+      "id": "유저 아이디2",
+      "password": "유저 비밀번호",
+      "nickname": "유저 닉네임"
+    },
+    {
+      "id": "123123",
+      "password": "123123",
+      "nickname": "123123"
+    },
+    {
+      "id": "유저아이디",
+      "password": "123123",
+      "nickname": "123"
+    }
+  ],
+  "login": [
+    {
+      "id": "유저 아이디1",
+      "password": "유저 비밀번호",
+      "nickname": "유저 닉네임"
+    },
+    {
+      "id": "유저 아이디2",
+      "password": "유저 비밀번호",
+      "nickname": "유저 닉네임"
+    },
+    {
+      "id": "123123",
+      "password": "123123",
+      "nickname": "123123"
+    }
+  ]
+}
