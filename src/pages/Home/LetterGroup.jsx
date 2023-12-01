@@ -4,7 +4,7 @@ import styled from "styled-components";
 import theme from "style/Theme";
 import member from "data/member";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLetter } from "redux/modules/letters";
+import { selectLetter, __getAllLetters } from "redux/modules/letters";
 const StWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -18,9 +18,15 @@ const StRow = styled.p`
 
 function LetterGroup({ selectMember }) {
   const dispatch = useDispatch();
+
   const { letters, selectedLetters } = useSelector((state) => {
     return state.letterData;
   });
+
+  useEffect(() => {
+    console.log(1);
+    dispatch(__getAllLetters());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(selectLetter(selectMember));

@@ -9,7 +9,7 @@ import { validateLetter } from "utils/validation";
 import styled from "styled-components";
 import theme from "style/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { createLetter } from "redux/modules/letters";
+import { __createLetter } from "redux/modules/letters";
 import { updateModal, openModal } from "redux/modules/modal";
 
 const Strow = styled.div`
@@ -25,14 +25,17 @@ const memberNameList = member.map((n) => n.name);
 
 function HomeForm() {
   const dispatch = useDispatch();
-  const nickname = useSelector((state) => state.authSlice.user.nickname);
+  const { nickname, userId } = useSelector((state) => state.authSlice.user);
   const [content, setContent] = useState("");
   const [writedTo, setWritedTo] = useState(memberNameList[0]);
   const onChange = (e, setState) => setState(e.target.value);
-  const handleCreateLetter = (e) => {
-    const validation = validateLetter(content);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const validation = validateLetter(nickname, content);
+    console.log(nickname, userId);
     if (validation === true) {
-      dispatch(createLetter({ nickname, content, writedTo }));
+      dispatch(__createLetter({ nickname, content, writedTo, userId }));
       setContent("");
       setWritedTo(memberNameList[0]);
     } else {
@@ -44,12 +47,11 @@ function HomeForm() {
       );
       dispatch(openModal());
     }
-    e.preventDefault();
   };
 
   return (
     <>
-      <Form color="blue" onSubmit={(e) => handleCreateLetter(e)}>
+      <Form color="blue" onSubmit={onSubmit}>
         <Strow>
           <Input
             value={nickname}
