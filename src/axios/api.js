@@ -27,10 +27,10 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   function (response) {
-    return response.data;
+    return response;
   },
   function (error) {
-    return Promise.reject(error.response.data);
+    return Promise.reject(error);
   }
 );
 export default instance;

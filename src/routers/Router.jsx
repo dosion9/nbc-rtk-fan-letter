@@ -10,7 +10,8 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import api from "../axios/api";
 import { login, logout } from "redux/modules/authSlice";
-import { updateModal } from "redux/modules/modal";
+import { updateModal } from "redux/modules/modalSlice";
+import { __tokenLogin } from "redux/modules/authSlice";
 
 const Router = () => {
   const dispatch = useDispatch();
@@ -21,38 +22,24 @@ const Router = () => {
 
   // 페이지 이동 시 만료된 토큰인지 확인
   useEffect(() => {
-    const LocalAccessToken = localStorage.getItem("accessToken");
-    const checkToken = async () => {
-      try {
-        const res = await api.get("/user");
-
-        if (res?.success) {
-          dispatch(login({ ...res, accessToken: LocalAccessToken }));
-        }
-      } catch (error) {
-        dispatch(logout());
-        localStorage.removeItem("accessToken");
-        dispatch(updateModal({ type: "warning", active: true, content: error.message, onSummit: null }));
-      }
-    };
-    if (LocalAccessToken) {
-      checkToken();
+    const hasToken = localStorage.getItem("accessToken");
+    if (hasToken) {
+      console.log("토큰 로그인");
+      dispatch(__tokenLogin());
     }
   }, []);
 
-  // 로그아웃 때 다른 페이지로 이동시 회원가입 페이지로 이동
   useEffect(() => {
+    // 로그아웃 때 다른 페이지로 이동막음
     if (!isLogin && !accessiblePath.includes(location.pathname)) {
       navigate("/user/login");
     }
-  }, [location, isLogin]);
-
-  // 로그인 때 로그인, 회원가입 페이지로 이동하려하면 이동 전 페이지로 이동
-  useEffect(() => {
+    // 로그인 때 로그인, 회원가입 페이지로 이동막음
     if (isLogin && accessiblePath.includes(location.pathname)) {
       navigate("/");
     }
   }, [location, isLogin]);
+
   return (
     <Routes>
       <Route element={<Layout />}>

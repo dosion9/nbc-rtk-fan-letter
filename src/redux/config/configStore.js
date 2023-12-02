@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import letterData from "redux/modules/letters";
-import modalState from "redux/modules/modal";
+import modalSlice from "redux/modules/modalSlice";
 import authSlice from "redux/modules/authSlice";
 
 const store = configureStore({
   reducer: {
     letterData,
-    modalState,
+    modalSlice,
     authSlice
   }
 });

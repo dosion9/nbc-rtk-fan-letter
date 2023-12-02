@@ -1,9 +1,73 @@
-import React, { useRef } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import theme from "style/Theme";
 import Button from "./Button";
-import { closeModal } from "redux/modules/modal";
+import { updateModalContent, closeModal, openModal } from "redux/modules/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { clearAuthError } from "redux/modules/authSlice";
+
+const modalType = {
+  warning: { text: "주의", color: "pink" },
+  default: { text: "알림", color: "blue" }
+};
+
+function Modal() {
+  const dispatch = useDispatch();
+
+  const modalSliceState = useSelector((state) => state.modalSlice);
+  const authSliceError = useSelector((state) => state.authSlice.error);
+
+  //
+  useEffect(() => {
+    const { isError, error } = authSliceError;
+    if (isError) {
+      const content = {
+        type: "warning",
+        content: error
+      };
+      dispatch(updateModalContent(content));
+      dispatch(clearAuthError());
+    }
+  }, [authSliceError]);
+
+  useEffect(() => {
+    if (modalSliceState.isOpen) {
+      dispatch(openModal());
+    }
+  }, [modalSliceState.isOpen]);
+
+  const onClose = (e) => {
+    e.preventDefault();
+
+    if (e.target.onclick) {
+      dispatch(closeModal());
+    }
+  };
+
+  return (
+    <>
+      {modalSliceState.isOpen ? (
+        <StDimmer onClick={(e) => onClose(e)}>
+          <StModalWrap color={modalType[modalSliceState.content.type].color || "green"}>
+            <div className="header">{modalType[modalSliceState.content.type].text}</div>
+            <div className="body">{modalSliceState.content.content}</div>
+            <div className="footer">
+              {modalSliceState.onSummit && (
+                <Button outline={"true"} color={"blue"} onClick={modalSliceState.onSummit}>
+                  확인
+                </Button>
+              )}
+
+              <Button outline={"true"} color={"pink"} onClick={(e) => onClose(e)}>
+                취소
+              </Button>
+            </div>
+          </StModalWrap>
+        </StDimmer>
+      ) : null}
+    </>
+  );
+}
 
 const StDimmer = styled.div`
   width: 100vw;
@@ -48,51 +112,5 @@ const StModalWrap = styled.div`
     }
   }
 `;
-
-const modalType = {
-  warning: { text: "주의", color: "pink" },
-  default: { text: "알림", color: "blue" }
-};
-
-function Modal() {
-  const dispatch = useDispatch();
-  const modalState = useSelector((state) => {
-    return state.modalState;
-  });
-  const dimmer = useRef();
-  const onClose = (e) => {
-    if (e.target.onclick) {
-      dispatch(closeModal());
-    }
-    e.preventDefault();
-  };
-
-  const onSummit = () => {
-    modalState.onSummit && modalState?.onSummit();
-  };
-  return (
-    <>
-      {modalState && modalState?.active ? (
-        <StDimmer onClick={(e) => onClose(e)} ref={dimmer}>
-          <StModalWrap color={modalType[modalState.type].color || "green"}>
-            <div className="header">{modalType[modalState.type].text}</div>
-            <div className="body">{modalState.content}</div>
-            <div className="footer">
-              {modalState?.onSummit && (
-                <Button outline={"true"} color={"blue"} onClick={onSummit}>
-                  확인
-                </Button>
-              )}
-
-              <Button outline={"true"} color={"pink"} onClick={(e) => onClose(e)}>
-                취소
-              </Button>
-            </div>
-          </StModalWrap>
-        </StDimmer>
-      ) : null}
-    </>
-  );
-}
 
 export default Modal;

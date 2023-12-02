@@ -10,29 +10,7 @@ import styled from "styled-components";
 import theme from "style/Theme";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLetter, deleteLetter, updateLetter } from "redux/modules/letters";
-import { updateModal, openModal } from "redux/modules/modal";
-const StUserImg = styled.div`
-  float: right;
-`;
-
-const StRow = styled.div`
-  font-size: ${(props) => props.theme.fontSize.lg};
-  margin-bottom: ${theme.spacing.base};
-  display: flex;
-
-  & b {
-    font-weight: bold;
-    min-width: 8rem;
-    display: inline-block;
-  }
-`;
-
-const StBtnGroup = styled.div`
-  width: 100%;
-  display: flex;
-  gap: ${theme.spacing.base};
-  justify-content: center;
-`;
+import { updateModalContent } from "redux/modules/modalSlice";
 
 function Detail() {
   const dispatch = useDispatch();
@@ -60,16 +38,15 @@ function Detail() {
       dispatch(updateLetter({ ...letter, content }));
       navigate("/");
     } else if (checkValidation !== true) {
-      dispatch(updateModal({ content: checkValidation }));
+      dispatch(updateModalContent({ content: checkValidation }));
     } else {
-      dispatch(updateModal({ content: "변경된 내용이 없습니다." }));
-      dispatch(openModal());
+      dispatch(updateModalContent({ content: "변경된 내용이 없습니다." }));
     }
   };
 
   const changeModalStateDelete = () => {
     dispatch(
-      updateModal({
+      updateModalContent({
         type: "warning",
         content: "정말로 삭제하시겠습니까?",
         onSummit: () => {
@@ -78,7 +55,6 @@ function Detail() {
         }
       })
     );
-    dispatch(openModal());
   };
 
   useEffect(() => {
@@ -146,5 +122,28 @@ function Detail() {
     </Container>
   );
 }
+
+const StUserImg = styled.div`
+  float: right;
+`;
+
+const StRow = styled.div`
+  font-size: ${(props) => props.theme.fontSize.lg};
+  margin-bottom: ${theme.spacing.base};
+  display: flex;
+
+  & b {
+    font-weight: bold;
+    min-width: 8rem;
+    display: inline-block;
+  }
+`;
+
+const StBtnGroup = styled.div`
+  width: 100%;
+  display: flex;
+  gap: ${theme.spacing.base};
+  justify-content: center;
+`;
 
 export default Detail;

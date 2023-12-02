@@ -3,10 +3,8 @@ import Form from "components/ui/Form";
 import Input from "components/ui/Input";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { login } from "redux/modules/authSlice";
+import { __login } from "redux/modules/authSlice";
 import { useDispatch } from "react-redux";
-import api from "../../../axios/api";
-import { updateModal } from "redux/modules/modal";
 
 function Login() {
   const dispatch = useDispatch();
@@ -18,19 +16,14 @@ function Login() {
     setState(e.target.value);
   };
 
+  // 로그인 기능
   const onSummit = async (e) => {
     e.preventDefault();
-
     const loginData = { id, password: pw };
-    try {
-      const res = await api.post("/login?expiresIn=5m", loginData);
-      dispatch(login(res));
-    } catch (error) {
-      dispatch(updateModal({ type: "warning", active: true, content: error.message, onSummit: null }));
-    }
+    dispatch(__login(loginData));
   };
 
-  // 로그인 Form에 다 입력해야 button 활성화
+  // button 활성화
   useEffect(() => {
     id && pw ? setDisabled(false) : setDisabled(true);
   }, [id, pw]);

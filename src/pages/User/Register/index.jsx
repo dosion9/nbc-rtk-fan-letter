@@ -5,7 +5,7 @@ import Input from "components/ui/Input";
 import Button from "components/ui/Button";
 import { validateId, validatePw, validateNickname } from "utils/validation";
 import { useDispatch } from "react-redux";
-import { updateModal } from "redux/modules/modal";
+import { updateModalContent } from "redux/modules/modalSlice";
 import api from "../../../axios/api";
 import { login } from "redux/modules/authSlice";
 function Register() {
@@ -43,11 +43,11 @@ function Register() {
       const { message, success } = await api.post("/register", signUpData);
       if (success) {
         const resLogin = await api.post("/login", loginData);
-        dispatch(updateModal({ active: true, content: message, onSummit: null }));
+        dispatch(updateModalContent({ content: message, onSummit: null }));
         dispatch(login(resLogin));
       }
     } catch (error) {
-      dispatch(updateModal({ type: "warning", active: true, content: error.message, onSummit: null }));
+      dispatch(updateModalContent({ type: "warning", active: true, content: error.message, onSummit: null }));
     }
   };
 

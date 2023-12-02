@@ -10,7 +10,7 @@ import styled from "styled-components";
 import theme from "style/Theme";
 import { useDispatch, useSelector } from "react-redux";
 import { __createLetter } from "redux/modules/letters";
-import { updateModal, openModal } from "redux/modules/modal";
+import { updateModalContent } from "redux/modules/modalSlice";
 
 const Strow = styled.div`
   display: flex;
@@ -40,12 +40,11 @@ function HomeForm() {
       setWritedTo(memberNameList[0]);
     } else {
       dispatch(
-        updateModal({
+        updateModalContent({
           content: validation,
           type: "warning"
         })
       );
-      dispatch(openModal());
     }
   };
 
