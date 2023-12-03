@@ -2,10 +2,11 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import theme from "style/Theme";
 import Button from "./Button";
-import { updateModalContent, closeModal, openModal } from "redux/modules/modalSlice";
+import { useNavigate } from "react-router-dom";
+import { confirmModal, updateModalContent, closeModal, openModal } from "redux/modules/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthError } from "redux/modules/authSlice";
-
+import { __deleteLetter } from "redux/modules/letters";
 const modalType = {
   warning: { text: "주의", color: "pink" },
   default: { text: "알림", color: "blue" }
@@ -13,11 +14,12 @@ const modalType = {
 
 function Modal() {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const modalSliceState = useSelector((state) => state.modalSlice);
   const authSliceError = useSelector((state) => state.authSlice.error);
+  const { isOpen } = modalSliceState;
+  const { func, param } = modalSliceState?.content?.onConfirm || {};
 
-  //
   useEffect(() => {
     const { isError, error } = authSliceError;
     if (isError) {
@@ -30,41 +32,64 @@ function Modal() {
     }
   }, [authSliceError]);
 
+  // useEffect(() => {
+  //   if (modalSliceState.isOpen) {
+  //     dispatch(openModal());
+  //   }
+  // }, [modalSliceState.isOpen]);
+
+  // 모달 "확인" 기능
+  // 누르면 func의 이름에 따라 동작을 실행
   useEffect(() => {
-    if (modalSliceState.isOpen) {
-      dispatch(openModal());
+    if (modalSliceState.isConfirm) {
+      switch (func) {
+        case "__deleteLetter":
+          dispatch(__deleteLetter(param));
+          dispatch(closeModal());
+          navigate("/");
+          break;
+        default:
+          dispatch(closeModal());
+          navigate("/");
+          break;
+      }
     }
-  }, [modalSliceState.isOpen]);
+  }, [modalSliceState.isConfirm]);
 
+  // 모달 "닫기"
   const onClose = (e) => {
-    e.preventDefault();
-
-    if (e.target.onclick) {
-      dispatch(closeModal());
+    if (e.target !== e.currentTarget) {
+      return;
     }
+    dispatch(closeModal());
+  };
+
+  // 모달 "확인"
+  const onConfirm = () => {
+    dispatch(confirmModal());
   };
 
   return (
     <>
-      {modalSliceState.isOpen ? (
-        <StDimmer onClick={(e) => onClose(e)}>
+      {isOpen && (
+        <StDimmer onClick={onClose}>
           <StModalWrap color={modalType[modalSliceState.content.type].color || "green"}>
             <div className="header">{modalType[modalSliceState.content.type].text}</div>
             <div className="body">{modalSliceState.content.content}</div>
             <div className="footer">
-              {modalSliceState.onSummit && (
-                <Button outline={"true"} color={"blue"} onClick={modalSliceState.onSummit}>
+              {func && (
+                <Button outline={"true"} color={"blue"} onClick={onConfirm}>
                   확인
                 </Button>
               )}
 
-              <Button outline={"true"} color={"pink"} onClick={(e) => onClose(e)}>
+              <Button outline={"true"} color={"pink"} onClick={onClose}>
                 취소
               </Button>
             </div>
           </StModalWrap>
         </StDimmer>
-      ) : null}
+      )}
     </>
   );
 }

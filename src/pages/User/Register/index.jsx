@@ -43,11 +43,11 @@ function Register() {
       const { message, success } = await api.post("/register", signUpData);
       if (success) {
         const resLogin = await api.post("/login", loginData);
-        dispatch(updateModalContent({ content: message, onSummit: null }));
+        dispatch(updateModalContent({ content: message }));
         dispatch(login(resLogin));
       }
     } catch (error) {
-      dispatch(updateModalContent({ type: "warning", active: true, content: error.message, onSummit: null }));
+      dispatch(updateModalContent({ type: "warning", content: error.message }));
     }
   };
 

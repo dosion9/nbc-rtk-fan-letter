@@ -1,11 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  isConfirm: false,
   isOpen: false,
   content: {
     type: "default",
     content: null,
-    onSummit: null
+    onConfirm: {
+      func: null,
+      param: null
+    }
   }
 };
 
@@ -14,19 +18,19 @@ const modalSlice = createSlice({
   initialState,
   reducers: {
     updateModalContent: (state, action) => {
-      const { type = "default", content, onSummit = null } = action.payload;
-
+      const { type = "default", content, onConfirm = initialState.onConfirm } = action.payload;
       state.isOpen = true;
-      state.content = { type, content, onSummit };
+      state.content = { type, content, onConfirm };
+    },
+    confirmModal: (state) => {
+      state.isConfirm = true;
     },
     openModal: (state) => {
       state.isOpen = true;
     },
-    closeModal: (state) => {
-      state.isOpen = false;
-    }
+    closeModal: () => initialState
   }
 });
 
 export default modalSlice.reducer;
-export const { updateModalContent, openModal, closeModal } = modalSlice.actions;
+export const { confirmModal, updateModalContent, openModal, closeModal } = modalSlice.actions;

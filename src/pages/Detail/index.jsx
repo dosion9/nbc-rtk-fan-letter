@@ -9,7 +9,7 @@ import { validateText } from "utils/validation";
 import styled from "styled-components";
 import theme from "style/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLetter, deleteLetter, updateLetter } from "redux/modules/letters";
+import { selectLetter, __updateLetter } from "redux/modules/letters";
 import { updateModalContent } from "redux/modules/modalSlice";
 
 function Detail() {
@@ -35,7 +35,7 @@ function Detail() {
     const checkChange = letter.content !== content;
     const checkValidation = validateText(content, 300);
     if (checkChange && checkValidation === true) {
-      dispatch(updateLetter({ ...letter, content }));
+      dispatch(__updateLetter({ ...letter, content }));
       navigate("/");
     } else if (checkValidation !== true) {
       dispatch(updateModalContent({ content: checkValidation }));
@@ -49,9 +49,10 @@ function Detail() {
       updateModalContent({
         type: "warning",
         content: "정말로 삭제하시겠습니까?",
-        onSummit: () => {
-          dispatch(deleteLetter(param.id));
-          navigate("/");
+        onConfirm: {
+          click: false,
+          func: "__deleteLetter",
+          param: letter
         }
       })
     );

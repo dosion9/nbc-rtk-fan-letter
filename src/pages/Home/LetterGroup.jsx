@@ -4,37 +4,23 @@ import styled from "styled-components";
 import theme from "style/Theme";
 import member from "data/member";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLetter, __getAllLetters } from "redux/modules/letters";
-const StWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.base};
-`;
-
-const StRow = styled.p`
-  padding: ${theme.spacing.xl} 0;
-  text-align: center;
-`;
+import { selectLetter, __getLetters } from "redux/modules/letters";
 
 function LetterGroup({ selectMember }) {
   const dispatch = useDispatch();
-
-  const { letters, selectedLetters } = useSelector((state) => {
-    return state.letterData;
-  });
+  const { isLoading, snapshot, selectedLetters } = useSelector((state) => state.letterData);
 
   useEffect(() => {
-    console.log(1);
-    dispatch(__getAllLetters());
-  }, [dispatch]);
+    dispatch(__getLetters());
+  }, []);
 
   useEffect(() => {
     dispatch(selectLetter(selectMember));
-  }, [dispatch, selectMember]);
+  }, [selectMember]);
 
   useEffect(() => {
     dispatch(selectLetter(selectMember));
-  }, [dispatch, letters]);
+  }, [snapshot]);
 
   return (
     <StWrap>
@@ -46,5 +32,16 @@ function LetterGroup({ selectMember }) {
     </StWrap>
   );
 }
+
+const StWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.base};
+`;
+
+const StRow = styled.p`
+  padding: ${theme.spacing.xl} 0;
+  text-align: center;
+`;
 
 export default LetterGroup;

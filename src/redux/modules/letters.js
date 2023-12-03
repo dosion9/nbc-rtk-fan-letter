@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import mockLetterData from "data/mockLetterData";
 import { v4 as uuidv4 } from "uuid";
 import jsonServer from "../../axios/jsonServer";
-export const __createLetter = createAsyncThunk("CREATE_LETTER", async (payload, thunkAPI) => {
+
+export const __createLetter = createAsyncThunk("createLetter", async (payload, thunkAPI) => {
   const { nickname, content, writedTo, userId } = payload;
   const newLetter = {
     createdAt: new Date().toISOString(),
@@ -14,21 +14,48 @@ export const __createLetter = createAsyncThunk("CREATE_LETTER", async (payload, 
     id: uuidv4(),
     userId
   };
-  const res = await jsonServer.post("/letters", newLetter);
-  thunkAPI.dispatch(createLetter(res));
+  try {
+    const res = await jsonServer.post("/letters", newLetter);
+    return thunkAPI.fulfillWithValue(res.data);
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error);
+  }
 });
 
-export const __getAllLetters = createAsyncThunk("GET_ALL_LETTERS", async (payload, thunkAPI) => {
-  thunkAPI.dispatch(startLoading());
-  const res = await jsonServer.get("/letters?_sort=createdAt&_order=desc");
-  console.log(res);
-  thunkAPI.dispatch(getAllLetters(res));
+export const __deleteLetter = createAsyncThunk("deleteLetter", async (payload, thunkAPI) => {
+  const { id: targetId } = payload;
+  try {
+    const res = await jsonServer.delete(`/letters/${targetId}`);
+    console.log(res);
+    return thunkAPI.fulfillWithValue(res.data);
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error);
+  }
+});
+
+export const __getLetters = createAsyncThunk("getLetters", async (_, thunkAPI) => {
+  try {
+    const res = await jsonServer.get("/letters?_sort=createdAt&_order=desc");
+    return thunkAPI.fulfillWithValue(res.data);
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error);
+  }
+});
+
+export const __updateLetter = createAsyncThunk("updateLetter", async (payload, thunkAPI) => {
+  const { id: targetId, content } = payload;
+  try {
+    const res = await jsonServer.patch(`/letters/${targetId}`, { content: content });
+    return thunkAPI.fulfillWithValue(res.data);
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error);
+  }
 });
 
 const initialState = {
-  // letters: JSON.parse(localStorage.getItem("letter")) || mockLetterData,
+  isUpdate: false,
   isLoading: false,
-  letters: JSON.parse(localStorage.getItem("letter")) || mockLetterData,
+  snapshot: [],
   selectedLetters: []
 };
 
@@ -36,35 +63,68 @@ const letterSlice = createSlice({
   name: "letter",
   initialState,
   reducers: {
-    startLoading: (state) => {
-      state.isLoading = true;
-      console.log("isLoading : ", state.isLoading);
-    },
-    getAllLetters: (state, action) => {
-      state.letters = action.payload;
-      state.isLoading = false;
-    },
-    createLetter: (state, action) => {
-      state.letters = [action.payload, ...state.letters];
-    },
     selectLetter: (state, action) => {
       const selectedInfo = action.payload;
-      const selectedLetters = state.letters.filter((n) => n.writedTo === selectedInfo || n.id === selectedInfo);
-      return { ...state, selectedLetters: [...selectedLetters] };
-    },
-    updateLetter: (state, action) => {
-      const updatedLetters = state.letters.map((n) => (n.id === action.payload.id ? action.payload : n));
-      localStorage.setItem("letter", JSON.stringify(updatedLetters));
-      return { ...state, letters: [...updatedLetters] };
-    },
-    deleteLetter: (state, action) => {
-      const deletedLetters = state.letters.filter((n) => n.id !== action.payload);
-      localStorage.setItem("letter", JSON.stringify(deletedLetters));
-      return { ...state, letters: [...deletedLetters] };
+      const newSelectedLetters = state.snapshot.filter((n) => n.writedTo === selectedInfo || n.id === selectedInfo);
+      state.selectedLetters = newSelectedLetters;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(__createLetter.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__createLetter.fulfilled, (state, action) => {
+        state.snapshot = [action.payload, ...state.snapshot];
+        state.isLoading = false;
+      })
+      .addCase(__createLetter.rejected, (state, action) => {
+        console.error("팬레터 작성 실패");
+        console.error(action.payload.data);
+        state.isLoading = false;
+      });
+    builder
+      .addCase(__deleteLetter.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__deleteLetter.fulfilled, (state, action) => {
+        state.snapshot = state.snapshot.filter((n) => n.id !== action.payload);
+        state.isLoading = false;
+      })
+      .addCase(__deleteLetter.rejected, (state, action) => {
+        console.error("팬레터 삭제 실패");
+        console.error(action.payload.data);
+        state.isLoading = false;
+      });
+    builder
+      .addCase(__getLetters.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__getLetters.fulfilled, (state, action) => {
+        state.snapshot = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(__getLetters.rejected, (state, action) => {
+        state.isLoading = false;
+        console.error("팬레터 데이터 가져오기 실패");
+        console.error(action.payload.data);
+      });
+    builder
+      .addCase(__updateLetter.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__updateLetter.fulfilled, (state, action) => {
+        state.snapshot = state.snapshot.map((n) => (n.id === action.payload.id ? action.payload : n));
+        console.log(state.snapshot);
+        state.isLoading = false;
+      })
+      .addCase(__updateLetter.rejected, (state, action) => {
+        console.error("팬레터 수정 실패");
+        console.error(action.payload.data);
+        state.isLoading = false;
+      });
   }
 });
 
 export default letterSlice.reducer;
-export const { startLoading, getAllLetters, createLetter, selectLetter, updateLetter, deleteLetter } =
-  letterSlice.actions;
+export const { selectLetter } = letterSlice.actions;
