@@ -2,8 +2,8 @@ import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import Home from "../pages/Home";
 import Detail from "../pages/Detail";
 import NotFound from "../pages/NotFound";
-import Login from "pages/User/Login";
-import Register from "pages/User/Register";
+import Login from "pages/Auth/Login";
+import Register from "pages/Auth/Register";
 import Layout from "./Layout";
 import UserLayout from "./UserLayout";
 import { useEffect } from "react";
@@ -14,7 +14,7 @@ const Router = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const accessiblePath = ["/user/register", "/user/login"];
+  const accessiblePath = ["/auth/register", "/auth/login"];
   const isLogin = useSelector((state) => state.authSlice.isLogin);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const Router = () => {
 
   useEffect(() => {
     if (!isLogin && !accessiblePath.includes(location.pathname)) {
-      return navigate("/user/login");
+      return navigate("/auth/login");
     }
     // // // 로그인 때 로그인, 회원가입 페이지로 이동막음
     if (isLogin && accessiblePath.includes(location.pathname)) {
@@ -40,7 +40,7 @@ const Router = () => {
         <Route path="profile" element={<>프로필</>} />
       </Route>
 
-      <Route path="user" element={<UserLayout />}>
+      <Route path="auth" element={<UserLayout />}>
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
       </Route>

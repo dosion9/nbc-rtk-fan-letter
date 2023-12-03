@@ -44,6 +44,7 @@ export const __getLetters = createAsyncThunk("getLetters", async (_, thunkAPI) =
     const confirmToken = await thunkAPI.dispatch(__tokenLogin());
     if (confirmToken.type === "tokenLogin/fulfilled") {
       const res = await jsonServer.get("/letters?_sort=createdAt&_order=desc");
+      console.log(res.data);
       return thunkAPI.fulfillWithValue(res.data);
     }
   } catch (error) {
@@ -98,7 +99,7 @@ const letterSlice = createSlice({
       })
       .addCase(__createLetter.fulfilled, (state, action) => {
         state.isLoading = false;
-        if (action.paylaod) {
+        if (action.payload) {
           state.snapshot = [action.payload, ...state.snapshot];
         }
       })
@@ -112,7 +113,7 @@ const letterSlice = createSlice({
       })
       .addCase(__deleteLetter.fulfilled, (state, action) => {
         state.isLoading = false;
-        if (action.paylaod) {
+        if (action.payload) {
           state.snapshot = state.snapshot.filter((n) => n.id !== action.payload);
         }
       })
@@ -126,7 +127,7 @@ const letterSlice = createSlice({
       })
       .addCase(__getLetters.fulfilled, (state, action) => {
         state.isLoading = false;
-        if (action.paylaod) {
+        if (action.payload) {
           state.snapshot = action.payload;
         }
       })
@@ -141,7 +142,7 @@ const letterSlice = createSlice({
       .addCase(__updateLetter.fulfilled, (state, action) => {
         state.isLoading = false;
 
-        if (action.paylaod) {
+        if (action.payload) {
           state.snapshot = state.snapshot.map((n) => (n.id === action.payload.id ? action.payload : n));
         }
       })

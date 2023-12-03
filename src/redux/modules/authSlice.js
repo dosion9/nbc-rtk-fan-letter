@@ -12,7 +12,8 @@ export const __tokenLogin = createAsyncThunk("tokenLogin", async (_, thunkAPI) =
 
 export const __login = createAsyncThunk("login", async (payload, thunkAPI) => {
   try {
-    const res = await api.post("/login?expiresIn=10s", payload);
+    const res = await api.post("/login", payload);
+    // const res = await api.post("/login?expiresIn=10s", payload);
     return thunkAPI.fulfillWithValue(res.data);
   } catch (error) {
     console.error("로그인 실패");
