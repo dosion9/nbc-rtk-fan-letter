@@ -9,7 +9,7 @@ import { validateLetter } from "utils/validation";
 import styled from "styled-components";
 import theme from "style/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { __createLetter } from "redux/modules/letters";
+import { __createLetter } from "redux/modules/letterSlice";
 import { updateModalContent } from "redux/modules/modalSlice";
 
 const Strow = styled.div`
@@ -33,7 +33,6 @@ function HomeForm() {
   const onSubmit = (e) => {
     e.preventDefault();
     const validation = validateLetter(nickname, content);
-    console.log(nickname, userId);
     if (validation === true) {
       dispatch(__createLetter({ nickname, content, writedTo, userId }));
       setContent("");

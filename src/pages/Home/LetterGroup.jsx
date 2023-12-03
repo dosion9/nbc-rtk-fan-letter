@@ -4,23 +4,22 @@ import styled from "styled-components";
 import theme from "style/Theme";
 import member from "data/member";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLetter, __getLetters } from "redux/modules/letters";
+import { selectLetter, __getLetters } from "redux/modules/letterSlice";
 
 function LetterGroup({ selectMember }) {
   const dispatch = useDispatch();
-  const { isLoading, snapshot, selectedLetters } = useSelector((state) => state.letterData);
+  const { isLogin } = useSelector((state) => state.authSlice);
+  const { isLoading, snapshot, selectedLetters } = useSelector((state) => state.letterSlice);
 
   useEffect(() => {
     dispatch(__getLetters());
   }, []);
 
   useEffect(() => {
-    dispatch(selectLetter(selectMember));
-  }, [selectMember]);
-
-  useEffect(() => {
-    dispatch(selectLetter(selectMember));
-  }, [snapshot]);
+    if (!isLoading && snapshot && isLogin) {
+      dispatch(selectLetter(selectMember));
+    }
+  }, [selectMember, snapshot]);
 
   return (
     <StWrap>

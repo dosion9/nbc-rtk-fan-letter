@@ -30,6 +30,7 @@ instance.interceptors.response.use(
     return response;
   },
   function (error) {
+    console.log("api.js 오류");
     return Promise.reject(error);
   }
 );

@@ -12,7 +12,7 @@ export const __tokenLogin = createAsyncThunk("tokenLogin", async (_, thunkAPI) =
 
 export const __login = createAsyncThunk("login", async (payload, thunkAPI) => {
   try {
-    const res = await api.post("/login?expiresIn=5m", payload);
+    const res = await api.post("/login?expiresIn=1m", payload);
     return thunkAPI.fulfillWithValue(res.data);
   } catch (error) {
     console.error("로그인 실패");
@@ -27,7 +27,6 @@ const initialState = {
     isError: false,
     error: null
   },
-
   user: {
     accessToken: null,
     userId: null,
@@ -53,10 +52,9 @@ const authSlice = createSlice({
 
       localStorage.setItem("accessToken", accessToken);
     },
-    logout: (state, action) => {
-      state.isLogin = false;
-      state.user = initialState.user;
+    logout: () => {
       localStorage.removeItem("accessToken");
+      return initialState;
     },
     clearAuthError: (state) => {
       state.error = initialState.error;
@@ -70,14 +68,18 @@ const authSlice = createSlice({
       .addCase(__tokenLogin.fulfilled, (state, action) => {
         state.isLoading = false;
         const { id: userId, nickname, avatar, success } = action.payload;
-        state.isLogin = success;
-        state.user = { userId, nickname, avatar };
+        if (!state.isLogin) {
+          state.isLogin = success;
+          state.user = { userId, nickname, avatar };
+        }
       })
       .addCase(__tokenLogin.rejected, (state, action) => {
         state.isLoading = false;
+        state.isLogin = false;
         state.error = { isError: true, error: action.payload.message };
         localStorage.removeItem("accessToken");
-      })
+      });
+    builder
       .addCase(__login.pending, (state) => {
         state.isLoading = true;
       })

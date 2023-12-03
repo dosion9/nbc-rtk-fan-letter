@@ -1,11 +1,10 @@
 import axios from "axios";
-
 const instance = axios.create({
   baseURL: process.env.REACT_APP_JSON_SERVER_URL
 });
 
 instance.interceptors.request.use(
-  function (config) {
+  async function (config) {
     return config;
   },
   function (error) {
@@ -19,7 +18,7 @@ instance.interceptors.response.use(
     return response;
   },
   function (error) {
-    return Promise.reject(error.response);
+    return Promise.reject(error);
   }
 );
 export default instance;

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { confirmModal, updateModalContent, closeModal, openModal } from "redux/modules/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuthError } from "redux/modules/authSlice";
-import { __deleteLetter } from "redux/modules/letters";
+import { __deleteLetter, clearLetterError } from "redux/modules/letterSlice";
 const modalType = {
   warning: { text: "주의", color: "pink" },
   default: { text: "알림", color: "blue" }
@@ -17,6 +17,7 @@ function Modal() {
   const navigate = useNavigate();
   const modalSliceState = useSelector((state) => state.modalSlice);
   const authSliceError = useSelector((state) => state.authSlice.error);
+  const letterSliceError = useSelector((state) => state.letterSlice.error);
   const { isOpen } = modalSliceState;
   const { func, param } = modalSliceState?.content?.onConfirm || {};
 
@@ -31,6 +32,18 @@ function Modal() {
       dispatch(clearAuthError());
     }
   }, [authSliceError]);
+
+  useEffect(() => {
+    const { isError, error } = letterSliceError;
+    if (isError) {
+      const content = {
+        type: "warning",
+        content: error
+      };
+      dispatch(updateModalContent(content));
+      dispatch(clearLetterError());
+    }
+  }, [letterSliceError]);
 
   // useEffect(() => {
   //   if (modalSliceState.isOpen) {

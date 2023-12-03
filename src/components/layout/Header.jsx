@@ -5,7 +5,7 @@ import styled from "styled-components";
 import Button from "components/ui/Button";
 import { FiLogOut } from "react-icons/fi";
 import { logout } from "redux/modules/authSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 function Header() {
   const dispatch = useDispatch();
 

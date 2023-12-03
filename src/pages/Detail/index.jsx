@@ -9,13 +9,13 @@ import { validateText } from "utils/validation";
 import styled from "styled-components";
 import theme from "style/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLetter, __updateLetter } from "redux/modules/letters";
+import { selectLetter, __updateLetter } from "redux/modules/letterSlice";
 import { updateModalContent } from "redux/modules/modalSlice";
 
 function Detail() {
   const dispatch = useDispatch();
   const { selectedLetters } = useSelector((state) => {
-    return state.letterData;
+    return state.letterSlice;
   });
   const param = useParams();
   const navigate = useNavigate();
