@@ -1,9 +1,10 @@
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
-import Home from "../pages/Home";
-import Detail from "../pages/Detail";
-import NotFound from "../pages/NotFound";
+import Home from "pages/Home";
+import Detail from "pages/Detail";
+import NotFound from "pages/NotFound";
 import Login from "pages/Auth/Login";
 import Register from "pages/Auth/Register";
+import Profile from "pages/Profile";
 import Layout from "./Layout";
 import UserLayout from "./UserLayout";
 import { useEffect } from "react";
@@ -37,7 +38,7 @@ const Router = () => {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="detail/:id" element={<Detail />} />
-        <Route path="profile" element={<>프로필</>} />
+        <Route path="profile" element={<Profile />} />
       </Route>
 
       <Route path="auth" element={<UserLayout />}>

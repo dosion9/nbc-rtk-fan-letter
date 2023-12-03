@@ -16,10 +16,11 @@ const Img = styled.img`
   height: 100%;
 `;
 
-function Avatar({ avatar, color }) {
+function Avatar({ avatar, color, className, children }) {
   return (
-    <ImgWrap color={color}>
+    <ImgWrap className={className} color={color}>
       <Img src={avatar} />
+      {children}
     </ImgWrap>
   );
 }
