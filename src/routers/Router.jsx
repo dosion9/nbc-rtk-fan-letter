@@ -7,25 +7,31 @@ import Register from "pages/User/Register";
 import Layout from "./Layout";
 import UserLayout from "./UserLayout";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { __tokenLogin } from "redux/modules/authSlice";
 
 const Router = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const accessiblePath = ["/user/register", "/user/login"];
   const isLogin = useSelector((state) => state.authSlice.isLogin);
 
   useEffect(() => {
-    // // // 로그아웃 때 다른 페이지로 이동막음
+    if (localStorage.getItem("accessToken")) {
+      dispatch(__tokenLogin());
+    }
+  }, []);
+
+  useEffect(() => {
     if (!isLogin && !accessiblePath.includes(location.pathname)) {
-      navigate("/user/login");
+      return navigate("/user/login");
     }
     // // // 로그인 때 로그인, 회원가입 페이지로 이동막음
     if (isLogin && accessiblePath.includes(location.pathname)) {
-      navigate("/");
+      return navigate("/");
     }
-  }, [isLogin]);
-
+  }, [isLogin, location.pathname]);
   return (
     <Routes>
       <Route element={<Layout />}>

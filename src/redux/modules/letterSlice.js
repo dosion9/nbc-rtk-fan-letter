@@ -56,7 +56,6 @@ export const __updateLetter = createAsyncThunk("updateLetter", async (payload, t
   try {
     const confirmToken = await thunkAPI.dispatch(__tokenLogin());
     if (confirmToken.type === "tokenLogin/fulfilled") {
-      console.log("이거됨??");
       const res = await jsonServer.patch(`/letters/${targetId}`, { content: content });
       return thunkAPI.fulfillWithValue(res.data);
     }
@@ -82,6 +81,8 @@ const letterSlice = createSlice({
   reducers: {
     selectLetter: (state, action) => {
       const selectedInfo = action.payload;
+      console.log(selectedInfo);
+      console.log(state.selectedLetters);
       const newSelectedLetters = state.snapshot.filter((n) => n.writedTo === selectedInfo || n.id === selectedInfo);
 
       state.selectedLetters = newSelectedLetters;
@@ -97,7 +98,9 @@ const letterSlice = createSlice({
       })
       .addCase(__createLetter.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.snapshot = [action.payload, ...state.snapshot];
+        if (action.paylaod) {
+          state.snapshot = [action.payload, ...state.snapshot];
+        }
       })
       .addCase(__createLetter.rejected, (state, action) => {
         state.isLoading = false;
@@ -109,7 +112,9 @@ const letterSlice = createSlice({
       })
       .addCase(__deleteLetter.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.snapshot = state.snapshot.filter((n) => n.id !== action.payload);
+        if (action.paylaod) {
+          state.snapshot = state.snapshot.filter((n) => n.id !== action.payload);
+        }
       })
       .addCase(__deleteLetter.rejected, (state, action) => {
         state.isLoading = false;
@@ -121,7 +126,9 @@ const letterSlice = createSlice({
       })
       .addCase(__getLetters.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.snapshot = action.payload;
+        if (action.paylaod) {
+          state.snapshot = action.payload;
+        }
       })
       .addCase(__getLetters.rejected, (state, action) => {
         state.isLoading = false;

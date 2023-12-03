@@ -14,9 +14,8 @@ import { updateModalContent } from "redux/modules/modalSlice";
 
 function Detail() {
   const dispatch = useDispatch();
-  const { selectedLetters } = useSelector((state) => {
-    return state.letterSlice;
-  });
+  const { user } = useSelector((state) => state.authSlice);
+  const { selectedLetters } = useSelector((state) => state.letterSlice);
   const param = useParams();
   const navigate = useNavigate();
   const [letter, setLetter] = useState({});
@@ -60,17 +59,17 @@ function Detail() {
 
   useEffect(() => {
     dispatch(selectLetter(param?.id));
-  }, [param.id]);
+  }, []);
 
   useEffect(() => {
-    const letter = selectedLetters[0];
-    if (letter !== undefined) {
-      setLetter(letter);
-      setContent(letter.content);
+    if (selectedLetters.length > 0) {
+      setLetter(selectedLetters[0]);
+      setContent(selectedLetters[0].content);
     } else {
-      navigate("*");
+      navigate("/*");
     }
   }, [selectedLetters]);
+
   return (
     <Container title={"팬레터 수정"}>
       <StUserImg>
@@ -99,27 +98,29 @@ function Detail() {
         ></Textarea>
       </StRow>
 
-      {editMode ? (
+      {user.userId === letter.userId ? (
         <StBtnGroup>
-          {/* content 수정 할 때 */}
-          <Button color="green" onClick={onChageLetter}>
-            수정 완료
-          </Button>
-          <Button color="pink" onClick={inactiveEditMode}>
-            수정 취소
-          </Button>
+          {editMode ? (
+            <>
+              <Button color="green" onClick={onChageLetter}>
+                수정 완료
+              </Button>
+              <Button color="pink" onClick={inactiveEditMode}>
+                수정 취소
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button color="blue" onClick={activeEditMode}>
+                수정
+              </Button>
+              <Button color="pink" onClick={changeModalStateDelete}>
+                삭제
+              </Button>
+            </>
+          )}
         </StBtnGroup>
-      ) : (
-        <StBtnGroup>
-          {/* content 수정 안할때 */}
-          <Button color="blue" onClick={activeEditMode}>
-            수정
-          </Button>
-          <Button color="pink" onClick={changeModalStateDelete}>
-            삭제
-          </Button>
-        </StBtnGroup>
-      )}
+      ) : null}
     </Container>
   );
 }
