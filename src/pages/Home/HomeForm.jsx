@@ -31,7 +31,6 @@ function HomeForm() {
   const onChange = (e, setState) => setState(e.target.value);
 
   const onSubmit = (e) => {
-    console.log(avatar);
     e.preventDefault();
     const validation = validateLetter(nickname, content);
     if (validation === true) {

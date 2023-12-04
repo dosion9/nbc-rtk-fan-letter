@@ -20,7 +20,6 @@ export const __createLetter = createAsyncThunk("createLetter", async (payload, t
       return thunkAPI.fulfillWithValue(res.data);
     }
   } catch (error) {
-    console.log("등록실패");
     return thunkAPI.rejectWithValue(error);
   }
 });
@@ -59,7 +58,6 @@ export const __updateLetter = createAsyncThunk("updateLetter", async (payload, t
       return thunkAPI.fulfillWithValue(res.data);
     }
   } catch (error) {
-    console.log("에러남");
     return thunkAPI.rejectWithValue(error);
   }
 });
@@ -152,7 +150,6 @@ const letterSlice = createSlice({
       })
       .addCase(__getLetters.rejected, (state, action) => {
         state.isLoading = false;
-        console.log(action);
         state.error = { isError: true, error: action.payload.response.data.message };
       });
     builder

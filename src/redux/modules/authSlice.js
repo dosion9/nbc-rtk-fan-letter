@@ -23,7 +23,6 @@ export const __login = createAsyncThunk("login", async (payload, thunkAPI) => {
 export const __updateProfile = createAsyncThunk("updateProfile", async (payload, thunkAPI) => {
   try {
     const res = await api.patch("/profile", payload);
-    console.log(res);
     return thunkAPI.fulfillWithValue(res.data);
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

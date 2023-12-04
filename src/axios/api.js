@@ -11,12 +11,10 @@ instance.interceptors.request.use(
 
     switch (config.url) {
       case "/user":
-        console.log("토큰 로그인");
         config.headers["Content-Type"] = "application/json";
         config.headers["Authorization"] = `Bearer ${accessToken}`;
         return config;
       case "/profile":
-        console.log("프로필 변경");
         config.headers["Content-Type"] = "multipart/form-data";
         config.headers["Authorization"] = `Bearer ${accessToken}`;
         return config;
@@ -35,7 +33,6 @@ instance.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log("api.js 오류");
     return Promise.reject(error);
   }
 );
