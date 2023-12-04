@@ -5,9 +5,7 @@ import Input from "components/ui/Input";
 import Button from "components/ui/Button";
 import { validateId, validatePw, validateNickname } from "utils/validation";
 import { useDispatch } from "react-redux";
-import { updateModalContent } from "redux/modules/modalSlice";
-import api from "../../../axios/api";
-import { login } from "redux/modules/authSlice";
+import { __login, __regist } from "redux/modules/authSlice";
 function Register() {
   const dispatch = useDispatch();
   const [id, setId] = useState("");
@@ -30,24 +28,13 @@ function Register() {
   // 회원가입
   const onSummit = async (e) => {
     e.preventDefault();
-    const loginData = {
-      id,
-      password: pw
-    };
-    const signUpData = {
-      id,
-      password: pw,
-      nickname
-    };
-    try {
-      const { message, success } = await api.post("/register", signUpData);
-      if (success) {
-        const resLogin = await api.post("/login", loginData);
-        dispatch(updateModalContent({ content: message }));
-        dispatch(login(resLogin));
-      }
-    } catch (error) {
-      dispatch(updateModalContent({ type: "warning", content: error.message }));
+
+    const loginData = { id, password: pw };
+    const registData = { ...loginData, nickname };
+
+    const registRes = await dispatch(__regist(registData));
+    if (registRes.payload.success) {
+      await dispatch(__login(loginData));
     }
   };
 

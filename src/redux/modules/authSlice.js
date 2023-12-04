@@ -29,6 +29,15 @@ export const __updateProfile = createAsyncThunk("updateProfile", async (payload,
   }
 });
 
+export const __regist = createAsyncThunk("regist", async (payload, thunkAPI) => {
+  try {
+    const registRes = await api.post("/register", payload);
+    return thunkAPI.fulfillWithValue(registRes.data);
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 const initialState = {
   isLoading: false,
   isLogin: false,
@@ -48,19 +57,6 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action) => {
-      const { accessToken, userId, success, avatar, nickname } = action.payload;
-
-      state.isLogin = success;
-      state.user = {
-        accessToken,
-        userId,
-        nickname,
-        avatar
-      };
-
-      localStorage.setItem("accessToken", accessToken);
-    },
     logout: () => {
       localStorage.removeItem("accessToken");
       return initialState;
@@ -115,14 +111,24 @@ const authSlice = createSlice({
       })
       .addCase(__updateProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { avatar, message, nickname, success } = action.payload;
+        const { avatar, message, nickname } = action.payload;
         state.error = { isError: true, error: message };
         state.user.nickname = nickname;
         state.user.avatar = avatar;
-
-        // 인증서버에 프로필 변경 완료했을 때 json-server의 내가 작성한 팬레터 (letters)들에 nickname과 avatar를 모두 수정
       })
       .addCase(__updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = { isError: true, error: action.payload.message };
+      });
+    builder
+      .addCase(__regist.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__regist.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = { isError: true, error: action.payload.message };
+      })
+      .addCase(__regist.rejected, (state, action) => {
         state.isLoading = false;
         state.error = { isError: true, error: action.payload.message };
       });
@@ -130,4 +136,4 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
-export const { login, logout, clearAuthError } = authSlice.actions;
+export const { logout, clearAuthError } = authSlice.actions;
