@@ -89,9 +89,9 @@ const initialState = {
   isLoading: false,
   snapshot: [],
   selectedLetters: [],
-  error: {
+  alert: {
     isError: false,
-    error: null
+    msg: null
   }
 };
 
@@ -105,8 +105,8 @@ const letterSlice = createSlice({
 
       state.selectedLetters = newSelectedLetters;
     },
-    clearLetterError: (state) => {
-      state.error = initialState.error;
+    clearLetterAlert: (state) => {
+      state.alert = initialState.alert;
     }
   },
   extraReducers: (builder) => {
@@ -122,7 +122,7 @@ const letterSlice = createSlice({
       })
       .addCase(__createLetter.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.response.data.message };
+        state.alert = { isError: true, msg: action.payload.response.data.message };
       });
     builder
       .addCase(__deleteLetter.pending, (state) => {
@@ -136,7 +136,7 @@ const letterSlice = createSlice({
       })
       .addCase(__deleteLetter.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.response.data.message };
+        state.alert = { isError: true, msg: action.payload.response.data.message };
       });
     builder
       .addCase(__getLetters.pending, (state) => {
@@ -150,7 +150,7 @@ const letterSlice = createSlice({
       })
       .addCase(__getLetters.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.response.data.message };
+        state.alert = { isError: true, msg: action.payload.response.data.message };
       });
     builder
       .addCase(__updateLetter.pending, (state) => {
@@ -158,14 +158,13 @@ const letterSlice = createSlice({
       })
       .addCase(__updateLetter.fulfilled, (state, action) => {
         state.isLoading = false;
-
         if (action.payload) {
           state.snapshot = state.snapshot.map((n) => (n.id === action.payload.id ? action.payload : n));
         }
       })
       .addCase(__updateLetter.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.response.data.message };
+        state.alert = { isError: true, msg: action.payload.response.data.message };
       });
     builder
       .addCase(__updateLetterProfile.pending, (state) => {
@@ -173,7 +172,6 @@ const letterSlice = createSlice({
       })
       .addCase(__updateLetterProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-
         if (action.payload) {
           state.snapshot = state.snapshot.map((n) =>
             n.userId === action.payload.userId ? (n = { ...n, ...action.payload }) : n
@@ -182,10 +180,10 @@ const letterSlice = createSlice({
       })
       .addCase(__updateLetterProfile.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.response.data.message };
+        state.alert = { isError: true, msg: action.payload.response.data.message };
       });
   }
 });
 
 export default letterSlice.reducer;
-export const { clearLetterError, selectLetter } = letterSlice.actions;
+export const { clearLetterAlert, selectLetter } = letterSlice.actions;

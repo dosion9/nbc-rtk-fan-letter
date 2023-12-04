@@ -13,7 +13,6 @@ export const __tokenLogin = createAsyncThunk("tokenLogin", async (_, thunkAPI) =
 export const __login = createAsyncThunk("login", async (payload, thunkAPI) => {
   try {
     const res = await api.post("/login", payload);
-    // const res = await api.post("/login?expiresIn=10s", payload);
     return thunkAPI.fulfillWithValue(res.data);
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -41,9 +40,9 @@ export const __regist = createAsyncThunk("regist", async (payload, thunkAPI) => 
 const initialState = {
   isLoading: false,
   isLogin: false,
-  error: {
+  alert: {
     isError: false,
-    error: null
+    msg: null
   },
   user: {
     accessToken: null,
@@ -61,8 +60,8 @@ const authSlice = createSlice({
       localStorage.removeItem("accessToken");
       return initialState;
     },
-    clearAuthError: (state) => {
-      state.error = initialState.error;
+    clearAuthAlert: (state) => {
+      state.alert = initialState.alert;
     }
   },
   extraReducers: (builder) => {
@@ -81,7 +80,7 @@ const authSlice = createSlice({
       .addCase(__tokenLogin.rejected, (state, action) => {
         state.isLoading = false;
         state.isLogin = false;
-        state.error = { isError: true, error: action.payload.message };
+        state.alert = { isError: true, msg: action.payload.message };
         localStorage.removeItem("accessToken");
       });
     builder
@@ -103,7 +102,7 @@ const authSlice = createSlice({
       })
       .addCase(__login.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.message };
+        state.alert = { isError: true, msg: action.payload.message };
       });
     builder
       .addCase(__updateProfile.pending, (state) => {
@@ -112,13 +111,13 @@ const authSlice = createSlice({
       .addCase(__updateProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         const { avatar, message, nickname } = action.payload;
-        state.error = { isError: true, error: message };
         state.user.nickname = nickname;
         state.user.avatar = avatar;
+        state.alert = { isError: false, msg: message };
       })
       .addCase(__updateProfile.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.message };
+        state.alert = { isError: true, msg: action.payload.message };
       });
     builder
       .addCase(__regist.pending, (state) => {
@@ -126,14 +125,14 @@ const authSlice = createSlice({
       })
       .addCase(__regist.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.message };
+        state.alert = { isError: false, msg: action.payload.message };
       })
       .addCase(__regist.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = { isError: true, error: action.payload.message };
+        state.alert = { isError: true, msg: action.payload.message };
       });
   }
 });
 
 export default authSlice.reducer;
-export const { logout, clearAuthError } = authSlice.actions;
+export const { logout, clearAuthAlert } = authSlice.actions;

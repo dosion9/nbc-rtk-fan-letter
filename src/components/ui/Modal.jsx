@@ -3,10 +3,10 @@ import styled from "styled-components";
 import theme from "style/Theme";
 import Button from "./Button";
 import { useNavigate } from "react-router-dom";
-import { confirmModal, updateModalContent, closeModal, openModal } from "redux/modules/modalSlice";
+import { confirmModal, updateModalContent, closeModal } from "redux/modules/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { clearAuthError } from "redux/modules/authSlice";
-import { __deleteLetter, clearLetterError } from "redux/modules/letterSlice";
+import { clearAuthAlert } from "redux/modules/authSlice";
+import { __deleteLetter, clearLetterAlert } from "redux/modules/letterSlice";
 const modalType = {
   warning: { text: "주의", color: "pink" },
   default: { text: "알림", color: "blue" }
@@ -16,40 +16,34 @@ function Modal() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const modalSliceState = useSelector((state) => state.modalSlice);
-  const authSliceError = useSelector((state) => state.authSlice.error);
-  const letterSliceError = useSelector((state) => state.letterSlice.error);
+  const authSliceAlert = useSelector((state) => state.authSlice.alert);
+  const letterSliceAlert = useSelector((state) => state.letterSlice.alert);
   const { isOpen } = modalSliceState;
   const { func, param } = modalSliceState?.content?.onConfirm || {};
 
   useEffect(() => {
-    const { isError, error } = authSliceError;
-    if (isError) {
+    const { isError, msg } = authSliceAlert;
+    if (msg) {
       const content = {
-        type: "warning",
-        content: error
+        type: isError ? "warning" : "default",
+        content: msg
       };
       dispatch(updateModalContent(content));
-      dispatch(clearAuthError());
+      dispatch(clearAuthAlert());
     }
-  }, [authSliceError]);
+  }, [authSliceAlert]);
 
   useEffect(() => {
-    const { isError, error } = letterSliceError;
+    const { isError, msg } = letterSliceAlert;
     if (isError) {
       const content = {
         type: "warning",
-        content: error
+        content: msg
       };
       dispatch(updateModalContent(content));
-      dispatch(clearLetterError());
+      dispatch(clearLetterAlert());
     }
-  }, [letterSliceError]);
-
-  // useEffect(() => {
-  //   if (modalSliceState.isOpen) {
-  //     dispatch(openModal());
-  //   }
-  // }, [modalSliceState.isOpen]);
+  }, [letterSliceAlert]);
 
   // 모달 "확인" 기능
   // 누르면 func의 이름에 따라 동작을 실행
