@@ -29,8 +29,8 @@ export const __deleteLetter = createAsyncThunk("deleteLetter", async (payload, t
   try {
     const confirmToken = await thunkAPI.dispatch(__tokenLogin());
     if (confirmToken.type === "tokenLogin/fulfilled") {
-      const res = await jsonServer.delete(`/letters/${targetId}`);
-      return thunkAPI.fulfillWithValue(res.data);
+      await jsonServer.delete(`/letters/${targetId}`);
+      return thunkAPI.fulfillWithValue({ id: targetId });
     }
   } catch (error) {
     return thunkAPI.rejectWithValue(error);
@@ -131,7 +131,7 @@ const letterSlice = createSlice({
       .addCase(__deleteLetter.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload) {
-          state.snapshot = state.snapshot.filter((n) => n.id !== action.payload);
+          state.snapshot = state.snapshot.filter((n) => n.id !== action.payload.id);
         }
       })
       .addCase(__deleteLetter.rejected, (state, action) => {
