@@ -5,7 +5,7 @@ function UserLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const pathLoginCheck = location.pathname === "/user/login";
+  const pathLoginCheck = location.pathname === "/auth/login";
 
   return (
     <StContainer>
