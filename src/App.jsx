@@ -4,6 +4,7 @@ import GlobalStyle from "style/GlobalStyle";
 import { ThemeProvider } from "styled-components";
 import theme from "style/Theme";
 import Modal from "components/ui/Modal";
+import Spinner from "components/ui/Spinner";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <GlobalStyle />
         <BrowserRouter>
           <Modal />
+          <Spinner />
           <Router />
         </BrowserRouter>
       </ThemeProvider>

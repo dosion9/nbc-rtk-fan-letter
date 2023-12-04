@@ -5,9 +5,11 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "components/ui/Button";
 import Input from "components/ui/Input";
-import { TbPhotoPlus, TbPhotoSearch } from "react-icons/tb";
+import { TbPhotoPlus } from "react-icons/tb";
 import { useInputValue } from "hooks/useInput";
 import { updateModalContent } from "redux/modules/modalSlice";
+import { __updateProfile } from "redux/modules/authSlice";
+import { __updateLetterProfile } from "redux/modules/letterSlice";
 
 function Profile() {
   const dispatch = useDispatch();
@@ -57,6 +59,23 @@ function Profile() {
     }
   };
 
+  // 프로필 변경사항 patch
+  const onSubmitProfile = async () => {
+    const checkAvatar = avatar instanceof File;
+    const updateData = {
+      nickname,
+      ...(checkAvatar && { avatar })
+    };
+
+    const res = await dispatch(__updateProfile(updateData));
+    if (res.type === "updateProfile/fulfilled") {
+      updateData.userId = user.userId;
+      res.payload?.avatar && (updateData.avatar = res.payload.avatar);
+      await dispatch(__updateLetterProfile(updateData));
+    }
+    setIsEdit(false);
+  };
+
   return (
     <Container title={"프로필 관리"}>
       <StRow>
@@ -86,13 +105,7 @@ function Profile() {
             <StInput value={nickname} onChange={onChangeNickname} />
           </StRow>
           <StRow>
-            <Button
-              color={"green"}
-              disabled={nickname === user.nickname}
-              onClick={() => {
-                console.log(1);
-              }}
-            >
+            <Button color={"green"} disabled={nickname === user.nickname} onClick={onSubmitProfile}>
               수정완료
             </Button>
             <Button color={"pink"} onClick={disableEdit}>

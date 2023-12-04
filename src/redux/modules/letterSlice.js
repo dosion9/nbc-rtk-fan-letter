@@ -3,12 +3,11 @@ import { v4 as uuidv4 } from "uuid";
 import jsonServer from "../../axios/jsonServer";
 import { __tokenLogin } from "./authSlice";
 export const __createLetter = createAsyncThunk("createLetter", async (payload, thunkAPI) => {
-  const { nickname, content, writedTo, userId } = payload;
+  const { nickname, content, avatar, writedTo, userId } = payload;
   const newLetter = {
     createdAt: new Date().toISOString(),
     nickname,
-    avatar:
-      "https://mblogthumb-phinf.pstatic.net/MjAyMDA2MTBfMTY1/MDAxNTkxNzQ2ODcyOTI2.Yw5WjjU3IuItPtqbegrIBJr3TSDMd_OPhQ2Nw-0-0ksg.8WgVjtB0fy0RCv0XhhUOOWt90Kz_394Zzb6xPjG6I8gg.PNG.lamute/user.png?type=w800",
+    avatar,
     content,
     writedTo,
     id: uuidv4(),
@@ -44,7 +43,6 @@ export const __getLetters = createAsyncThunk("getLetters", async (_, thunkAPI) =
     const confirmToken = await thunkAPI.dispatch(__tokenLogin());
     if (confirmToken.type === "tokenLogin/fulfilled") {
       const res = await jsonServer.get("/letters?_sort=createdAt&_order=desc");
-      console.log(res.data);
       return thunkAPI.fulfillWithValue(res.data);
     }
   } catch (error) {
@@ -66,6 +64,29 @@ export const __updateLetter = createAsyncThunk("updateLetter", async (payload, t
   }
 });
 
+export const __updateLetterProfile = createAsyncThunk("updateLetterProfile", async (payload, thunkAPI) => {
+  const { userId, avatar = null, nickname } = payload;
+  const updateDate = {
+    nickname
+  };
+  if (avatar) {
+    updateDate.avatar = avatar;
+  }
+  try {
+    const getAllLetters = await jsonServer.get("/letters");
+    const myLetters = getAllLetters.data.filter((n) => n.userId === userId);
+    const resGroup = [];
+    myLetters.forEach(async (n) => {
+      const res = await jsonServer.patch(`/letters/${n.id}`, updateDate);
+      resGroup.push(res);
+    });
+
+    return thunkAPI.fulfillWithValue({ updateDate, userId });
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error);
+  }
+});
+
 const initialState = {
   isLoading: false,
   snapshot: [],
@@ -82,8 +103,6 @@ const letterSlice = createSlice({
   reducers: {
     selectLetter: (state, action) => {
       const selectedInfo = action.payload;
-      console.log(selectedInfo);
-      console.log(state.selectedLetters);
       const newSelectedLetters = state.snapshot.filter((n) => n.writedTo === selectedInfo || n.id === selectedInfo);
 
       state.selectedLetters = newSelectedLetters;
@@ -133,6 +152,7 @@ const letterSlice = createSlice({
       })
       .addCase(__getLetters.rejected, (state, action) => {
         state.isLoading = false;
+        console.log(action);
         state.error = { isError: true, error: action.payload.response.data.message };
       });
     builder
@@ -147,6 +167,23 @@ const letterSlice = createSlice({
         }
       })
       .addCase(__updateLetter.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = { isError: true, error: action.payload.response.data.message };
+      });
+    builder
+      .addCase(__updateLetterProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__updateLetterProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        if (action.payload) {
+          state.snapshot = state.snapshot.map((n) =>
+            n.userId === action.payload.userId ? (n = { ...n, ...action.payload }) : n
+          );
+        }
+      })
+      .addCase(__updateLetterProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = { isError: true, error: action.payload.response.data.message };
       });

@@ -7,13 +7,18 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   function (config) {
+    const accessToken = localStorage.getItem("accessToken");
+
     switch (config.url) {
       case "/user":
         console.log("토큰 로그인");
-        const accessToken = localStorage.getItem("accessToken");
         config.headers["Content-Type"] = "application/json";
         config.headers["Authorization"] = `Bearer ${accessToken}`;
-
+        return config;
+      case "/profile":
+        console.log("프로필 변경");
+        config.headers["Content-Type"] = "multipart/form-data";
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
         return config;
       default:
         return config;

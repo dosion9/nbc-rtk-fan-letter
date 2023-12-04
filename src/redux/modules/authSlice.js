@@ -16,7 +16,16 @@ export const __login = createAsyncThunk("login", async (payload, thunkAPI) => {
     // const res = await api.post("/login?expiresIn=10s", payload);
     return thunkAPI.fulfillWithValue(res.data);
   } catch (error) {
-    console.error("로그인 실패");
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const __updateProfile = createAsyncThunk("updateProfile", async (payload, thunkAPI) => {
+  try {
+    const res = await api.patch("/profile", payload);
+    console.log(res);
+    return thunkAPI.fulfillWithValue(res.data);
+  } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
@@ -98,6 +107,23 @@ const authSlice = createSlice({
         localStorage.setItem("accessToken", accessToken);
       })
       .addCase(__login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = { isError: true, error: action.payload.message };
+      });
+    builder
+      .addCase(__updateProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__updateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const { avatar, message, nickname, success } = action.payload;
+        state.error = { isError: true, error: message };
+        state.user.nickname = nickname;
+        state.user.avatar = avatar;
+
+        // 인증서버에 프로필 변경 완료했을 때 json-server의 내가 작성한 팬레터 (letters)들에 nickname과 avatar를 모두 수정
+      })
+      .addCase(__updateProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = { isError: true, error: action.payload.message };
       });

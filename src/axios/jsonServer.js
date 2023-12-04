@@ -5,7 +5,14 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   async function (config) {
-    return config;
+    switch (config.method) {
+      case "patch":
+        config.headers["Content-Type"] = "application/json";
+        return config;
+
+      default:
+        return config;
+    }
   },
   function (error) {
     console.error(error);

@@ -25,16 +25,17 @@ const memberNameList = member.map((n) => n.name);
 
 function HomeForm() {
   const dispatch = useDispatch();
-  const { nickname, userId } = useSelector((state) => state.authSlice.user);
+  const { nickname, userId, avatar } = useSelector((state) => state.authSlice.user);
   const [content, setContent] = useState("");
   const [writedTo, setWritedTo] = useState(memberNameList[0]);
   const onChange = (e, setState) => setState(e.target.value);
 
   const onSubmit = (e) => {
+    console.log(avatar);
     e.preventDefault();
     const validation = validateLetter(nickname, content);
     if (validation === true) {
-      dispatch(__createLetter({ nickname, content, writedTo, userId }));
+      dispatch(__createLetter({ nickname, content, avatar, writedTo, userId }));
       setContent("");
       setWritedTo(memberNameList[0]);
     } else {
