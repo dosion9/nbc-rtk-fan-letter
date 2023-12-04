@@ -1,7 +1,6 @@
-import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "pages/Home";
 import Detail from "pages/Detail";
-import NotFound from "pages/NotFound";
 import Login from "pages/Auth/Login";
 import Register from "pages/Auth/Register";
 import Profile from "pages/Profile";
@@ -13,9 +12,6 @@ import { __tokenLogin } from "redux/modules/authSlice";
 
 const Router = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const accessiblePath = ["/auth/register", "/auth/login"];
   const isLogin = useSelector((state) => state.authSlice.isLogin);
 
   useEffect(() => {
@@ -24,29 +20,24 @@ const Router = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!isLogin && !accessiblePath.includes(location.pathname)) {
-      return navigate("/auth/login");
-    }
-    // // // 로그인 때 로그인, 회원가입 페이지로 이동막음
-    if (isLogin && accessiblePath.includes(location.pathname)) {
-      return navigate("/");
-    }
-  }, [isLogin, location.pathname]);
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="detail/:id" element={<Detail />} />
-        <Route path="profile" element={<Profile />} />
-      </Route>
-
-      <Route path="auth" element={<UserLayout />}>
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-      </Route>
-
-      <Route path="*" element={<NotFound />} />
+      {isLogin ? (
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="detail/:id" element={<Detail />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      ) : (
+        <>
+          <Route path="auth" element={<UserLayout />}>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+          </Route>
+          <Route path="*" element={<Navigate to="auth/login" replace />} />
+        </>
+      )}
     </Routes>
   );
 };
