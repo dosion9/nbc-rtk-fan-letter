@@ -1,17 +1,16 @@
 import React from "react";
-import theme from "style/Theme";
 import styled from "styled-components";
 
 const StForm = styled.form.attrs(() => ({
   autoComplete: "off"
 }))`
   display: grid;
-  gap: ${theme.spacing.base};
+  gap: ${({ theme, $gap }) => ($gap ? theme.spacing[$gap] : theme.spacing.base)};
 `;
 
-function Form({ children, onSubmit, color }) {
+function Form({ children, onSubmit, gap }) {
   return (
-    <StForm color={color} onSubmit={onSubmit}>
+    <StForm onSubmit={onSubmit} $gap={gap}>
       {children}
     </StForm>
   );

@@ -8,9 +8,9 @@ import member from "data/member";
 import { validateLetter } from "utils/validation";
 import styled from "styled-components";
 import theme from "style/Theme";
-import { useDispatch } from "react-redux";
-import { createLetter } from "redux/modules/letters";
-import { updateModal, openModal } from "redux/modules/modal";
+import { useDispatch, useSelector } from "react-redux";
+import { __createLetter } from "redux/modules/letterSlice";
+import { updateModalContent } from "redux/modules/modalSlice";
 
 const Strow = styled.div`
   display: flex;
@@ -25,41 +25,39 @@ const memberNameList = member.map((n) => n.name);
 
 function HomeForm() {
   const dispatch = useDispatch();
-  const [nickname, setNickname] = useState("");
+  const { nickname, userId, avatar } = useSelector((state) => state.authSlice.user);
   const [content, setContent] = useState("");
   const [writedTo, setWritedTo] = useState(memberNameList[0]);
   const onChange = (e, setState) => setState(e.target.value);
-  const handleCreateLetter = (e) => {
+
+  const onSubmit = (e) => {
+    e.preventDefault();
     const validation = validateLetter(nickname, content);
     if (validation === true) {
-      dispatch(createLetter({ nickname, content, writedTo }));
-      setNickname("");
+      dispatch(__createLetter({ nickname, content, avatar, writedTo, userId }));
       setContent("");
       setWritedTo(memberNameList[0]);
     } else {
       dispatch(
-        updateModal({
+        updateModalContent({
           content: validation,
           type: "warning"
         })
       );
-      dispatch(openModal());
     }
-    e.preventDefault();
   };
 
   return (
     <>
-      <Form color="blue" onSubmit={(e) => handleCreateLetter(e)}>
+      <Form color="blue" onSubmit={onSubmit}>
         <Strow>
           <Input
             value={nickname}
-            placeholder={"최대 10글자까지 작성할 수 있습니다."}
             maxLength={10}
-            onChange={(e) => onChange(e, setNickname)}
             labelText={"닉네임"}
             className="col"
             color="blue"
+            readOnly={true}
           ></Input>
           <SelectBox
             value={writedTo}

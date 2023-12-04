@@ -9,36 +9,13 @@ import { validateText } from "utils/validation";
 import styled from "styled-components";
 import theme from "style/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLetter, deleteLetter, updateLetter } from "redux/modules/letters";
-import { updateModal, openModal } from "redux/modules/modal";
-const StUserImg = styled.div`
-  float: right;
-`;
-
-const StRow = styled.div`
-  font-size: ${(props) => props.theme.fontSize.lg};
-  margin-bottom: ${theme.spacing.base};
-  display: flex;
-
-  & b {
-    font-weight: bold;
-    min-width: 8rem;
-    display: inline-block;
-  }
-`;
-
-const StBtnGroup = styled.div`
-  width: 100%;
-  display: flex;
-  gap: ${theme.spacing.base};
-  justify-content: center;
-`;
+import { selectLetter, __updateLetter } from "redux/modules/letterSlice";
+import { updateModalContent } from "redux/modules/modalSlice";
 
 function Detail() {
   const dispatch = useDispatch();
-  const { selectedLetters } = useSelector((state) => {
-    return state.letterData;
-  });
+  const { user } = useSelector((state) => state.authSlice);
+  const { selectedLetters } = useSelector((state) => state.letterSlice);
   const param = useParams();
   const navigate = useNavigate();
   const [letter, setLetter] = useState({});
@@ -57,43 +34,42 @@ function Detail() {
     const checkChange = letter.content !== content;
     const checkValidation = validateText(content, 300);
     if (checkChange && checkValidation === true) {
-      dispatch(updateLetter({ ...letter, content }));
+      dispatch(__updateLetter({ ...letter, content }));
       navigate("/");
     } else if (checkValidation !== true) {
-      dispatch(updateModal({ content: checkValidation }));
+      dispatch(updateModalContent({ content: checkValidation }));
     } else {
-      dispatch(updateModal({ content: "변경된 내용이 없습니다." }));
-      dispatch(openModal());
+      dispatch(updateModalContent({ content: "변경된 내용이 없습니다." }));
     }
   };
 
   const changeModalStateDelete = () => {
     dispatch(
-      updateModal({
+      updateModalContent({
         type: "warning",
         content: "정말로 삭제하시겠습니까?",
-        onSummit: () => {
-          dispatch(deleteLetter(param.id));
-          navigate("/");
+        onConfirm: {
+          click: false,
+          func: "__deleteLetter",
+          param: letter
         }
       })
     );
-    dispatch(openModal());
   };
 
   useEffect(() => {
     dispatch(selectLetter(param?.id));
-  }, [param.id]);
+  }, []);
 
   useEffect(() => {
-    const letter = selectedLetters[0];
-    if (letter !== undefined) {
-      setLetter(letter);
-      setContent(letter.content);
+    if (selectedLetters.length > 0) {
+      setLetter(selectedLetters[0]);
+      setContent(selectedLetters[0].content);
     } else {
-      navigate("*");
+      navigate("/*");
     }
   }, [selectedLetters]);
+
   return (
     <Container title={"팬레터 수정"}>
       <StUserImg>
@@ -122,29 +98,54 @@ function Detail() {
         ></Textarea>
       </StRow>
 
-      {editMode ? (
+      {user.userId === letter.userId ? (
         <StBtnGroup>
-          {/* content 수정 할 때 */}
-          <Button color="green" onClick={onChageLetter}>
-            수정 완료
-          </Button>
-          <Button color="pink" onClick={inactiveEditMode}>
-            수정 취소
-          </Button>
+          {editMode ? (
+            <>
+              <Button color="green" onClick={onChageLetter}>
+                수정 완료
+              </Button>
+              <Button color="pink" onClick={inactiveEditMode}>
+                수정 취소
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button color="blue" onClick={activeEditMode}>
+                수정
+              </Button>
+              <Button color="pink" onClick={changeModalStateDelete}>
+                삭제
+              </Button>
+            </>
+          )}
         </StBtnGroup>
-      ) : (
-        <StBtnGroup>
-          {/* content 수정 안할때 */}
-          <Button color="blue" onClick={activeEditMode}>
-            수정
-          </Button>
-          <Button color="pink" onClick={changeModalStateDelete}>
-            삭제
-          </Button>
-        </StBtnGroup>
-      )}
+      ) : null}
     </Container>
   );
 }
+
+const StUserImg = styled.div`
+  float: right;
+`;
+
+const StRow = styled.div`
+  font-size: ${(props) => props.theme.fontSize.lg};
+  margin-bottom: ${theme.spacing.base};
+  display: flex;
+
+  & b {
+    font-weight: bold;
+    min-width: 8rem;
+    display: inline-block;
+  }
+`;
+
+const StBtnGroup = styled.div`
+  width: 100%;
+  display: flex;
+  gap: ${theme.spacing.base};
+  justify-content: center;
+`;
 
 export default Detail;

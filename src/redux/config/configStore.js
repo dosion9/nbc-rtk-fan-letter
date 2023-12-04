@@ -1,12 +1,14 @@
-import { createStore } from "redux";
-import { combineReducers } from "redux";
-import letterData from "redux/modules/letters";
-import modalState from "redux/modules/modal";
-const rootReducer = combineReducers({
-  letterData,
-  modalState
-});
+import { configureStore } from "@reduxjs/toolkit";
+import letterSlice from "redux/modules/letterSlice";
+import modalSlice from "redux/modules/modalSlice";
+import authSlice from "redux/modules/authSlice";
 
-const store = createStore(rootReducer);
+const store = configureStore({
+  reducer: {
+    letterSlice,
+    modalSlice,
+    authSlice
+  }
+});
 
 export default store;

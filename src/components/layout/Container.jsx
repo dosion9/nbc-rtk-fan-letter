@@ -21,12 +21,12 @@ const StWrap = styled.div`
   overflow: hidden;
 `;
 
-function Container({ children, title }) {
+function Container({ children, title, className }) {
   return (
     <StContainer>
       {title && <StTitle>{title}</StTitle>}
 
-      <StWrap> {children}</StWrap>
+      <StWrap className={className}> {children}</StWrap>
     </StContainer>
   );
 }
